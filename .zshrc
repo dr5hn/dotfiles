@@ -1,80 +1,81 @@
-# Sourced upon starting of new shell
+# ~/.zshrc
+# Interactive shell configuration
+# Modular setup - sources files from ~/.zsh/
 
-SSH_ENV=$HOME/.ssh/environment
-
-# start the ssh-agent
-function start_agent {
-    echo "Initializing new SSH agent..."
-    # spawn ssh-agent
-    /usr/bin/ssh-agent | sed 's/^echo/#echo/' > ${SSH_ENV}
-    echo succeeded
-    chmod 600 ${SSH_ENV}
-    . ${SSH_ENV} > /dev/null
-    /usr/bin/ssh-add
-    /usr/bin/ssh-add ~/.ssh/id_rsa
-}
-
-if [ -f "${SSH_ENV}" ]; then
-     . ${SSH_ENV} > /dev/null
-     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-        start_agent;
-    }
-else
-    start_agent;
+# Powerlevel10k instant prompt — must stay near the top of ~/.zshrc.
+# Renders a cached prompt immediately, before the rest of init runs.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-####
-# FNM
-####
-eval "$(fnm env --use-on-cd)"
+# Initialise zsh completion system (must run before any compdef calls)
+autoload -Uz compinit && compinit -C
+# Compile the completion dump to bytecode so it loads faster next time.
+[[ -s ~/.zcompdump && ( ! -s ~/.zcompdump.zwc || ~/.zcompdump -nt ~/.zcompdump.zwc ) ]] && zcompile ~/.zcompdump
 
-####
-# PHP
-####
-# export PATH="/opt/homebrew/opt/php@7.4/bin:$PATH"
-# export PATH="/opt/homebrew/opt/php@7.4/sbin:$PATH"
+# Caching helper for slow tool init snippets (must load before the modules below)
+source ~/.zsh/lib/cache-init.zsh
 
-# export PATH="/opt/homebrew/opt/php@8.0/bin:$PATH"
-# export PATH="/opt/homebrew/opt/php@8.0/sbin:$PATH"
+# Source modular configuration files
+for config_file in \
+    ~/.zsh/path.zsh \
+    ~/.zsh/env.zsh \
+    ~/.zsh/private.zsh \
+    ~/.zsh/history.zsh \
+    ~/.zsh/ssh.zsh \
+    ~/.zsh/tools.zsh \
+    ~/.zsh/lazy/*.zsh \
+    ~/.zsh/aliases/*.zsh \
+    ~/.zsh/functions/*.zsh
+do
+    [[ -f "$config_file" ]] && source "$config_file"
+done
 
-# export PATH="/opt/homebrew/opt/php@8.1/bin:$PATH"
-# export PATH="/opt/homebrew/opt/php@8.1/sbin:$PATH"
+# Powerlevel10k prompt (zsh-native, no per-prompt subprocess fork)
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+# To customise: run `p10k configure` or edit ~/.p10k.zsh
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# export PATH="/opt/homebrew/opt/php@8.2/bin:$PATH"
-# export PATH="/opt/homebrew/opt/php@8.2/sbin:$PATH"
 
-export PATH="/opt/homebrew/opt/php@8.3/bin:$PATH"
-export PATH="/opt/homebrew/opt/php@8.3/sbin:$PATH"
+# Herd PHP configs consolidated in ~/.zsh/env.zsh
 
-####
-# Composer
-####
-export PATH="$HOME/.composer/vendor/bin:$PATH"
+# CCM — Claude Code Manager (PATH in path.zsh); cached init, regenerates on upgrade
+_cache_init ccm ccm hook --isolated
 
-####
-# MAMP
-####
-# export PATH="/Applications/MAMP/Library/bin:$PATH"
+# bun (PATH in path.zsh)
+export BUN_INSTALL="$HOME/.bun"
+[ -s "/Users/darshan/.bun/_bun" ] && source "/Users/darshan/.bun/_bun"
 
-####
-# DBNgin
-####
-# export PATH="/Users/Shared/DBngin/mysql/5.7.23/bin:$PATH"
-export PATH="/Users/Shared/DBngin/redis/6.2.1/bin:$PATH"
+alias clauded='claude --dangerously-skip-permissions'
+alias codexd='codex -c model_reasoning_effort="high" --ask-for-approval never --sandbox danger-full-access -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true'
 
-####
-# Yarn
-####
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
-####
-# Shopify
-####
-export SHOPIFY_CLI_STACKTRACE=1
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/84/"
 
-####
-# Python
-####
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+
+# Herd injected PHP 8.5 configuration.
+export HERD_PHP_85_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/85/"
+
+
+# Herd injected PHP 8.3 configuration.
+export HERD_PHP_83_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/83/"
+
+
+# Herd injected PHP 8.2 configuration.
+export HERD_PHP_82_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/82/"
+
+
+# Herd injected PHP 8.1 configuration.
+export HERD_PHP_81_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/81/"
+
+
+# Herd injected PHP 8.0 configuration.
+export HERD_PHP_80_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/80/"
+
+
+# Herd injected PHP 7.4 configuration.
+export HERD_PHP_74_INI_SCAN_DIR="/Users/darshan/Library/Application Support/Herd/config/php/74/"
+
+# Interactive UX plugins — MUST be sourced last (syntax-highlighting requirement)
+source ~/.zsh/plugins.zsh
