@@ -2,12 +2,6 @@
 # Interactive shell configuration
 # Modular setup - sources files from ~/.zsh/
 
-# Powerlevel10k instant prompt — must stay near the top of ~/.zshrc.
-# Renders a cached prompt immediately, before the rest of init runs.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Initialise zsh completion system (must run before any compdef calls)
 autoload -Uz compinit && compinit -C
 # Compile the completion dump to bytecode so it loads faster next time.

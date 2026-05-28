@@ -2,8 +2,6 @@
 # Hand-written to mirror the previous oh-my-posh "agnoster" theme.
 # Re-run `p10k configure` any time to regenerate this with full font detection.
 
-'builtin' 'emulate' '-L' 'zsh' '-o' 'no_aliases' '-o' 'extended_glob' '-o' 'no_short_loops'
-
 () {
   emulate -L zsh -o extended_glob
   unset -m 'POWERLEVEL9K_*~POWERLEVEL9K_GITSTATUS_DIR'
@@ -62,7 +60,7 @@
   # ---- behaviour --------------------------------------------------------
   # Show a fully cached prompt instantly on startup; print warnings if any
   # init code writes to the console (set to 'quiet' to silence those).
-  typeset -g POWERLEVEL9K_INSTANT_PROMPT=verbose
+  typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
   (( ! $+functions[p10k] )) || p10k reload

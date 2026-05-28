@@ -1,37 +1,70 @@
-# My Awesome Dotfiles Repository 🌟
+# dotfiles 🐚
 
-## 🚀 Introduction
-Welcome to the magical world of my dotfiles! 🎩✨ Here, you'll find the secret sauce 🍲 that turns my macOS terminal from meh 😒 to marvelous 🤩. It's like the digital equivalent of a superhero cape for your terminal! 🦸‍♂️🦸‍♀️
+My macOS zsh setup — modular, fast to start, and easy to extend. The `.zshrc`
+is a thin loader; everything real lives in small, focused files under `~/.zsh/`.
 
-## 📁 What's Inside?
-* .zprofile: It's not just a profile; it's a Z-profile! Way cooler and z-ier than your average profile. 🌈
-* .zshrc: This little gem 💎 is like a personal assistant 🤖, but for your shell. It does everything except make coffee ☕ (working on that).
-* .gitconfig: Your very own guide to the Git galaxy, complete with shortcuts, aliases, and a touch of stardust! 🌌🧭
-* .gitignore_global: The universal black hole where unwanted files get sucked in, never to be seen again! 🕳️💫
+## What's inside
 
-## 🎉 Features
-* Homebrew integration: Because manually managing dependencies is so 2010. 🍺
-* Ruby, Python, PHP: We speak multiple languages! 🇫🇷🇪🇸🇩🇪 (just kidding, only programming languages).
-* Aliases: Shortcuts for your shortcuts, because who has time to type? ⏱️
-* Cool scripts: Automate the boring stuff, like a coding wizard! 🧙‍♂️
-* .gitignore_global: Like a cosmic filter, it keeps your repositories free from clutter and space junk! 🌌🗑️
-* .gitconfig: Navigate the Git universe like a seasoned space captain! 🧑‍🚀🚀
+| Path | Purpose |
+|------|---------|
+| `.zshrc` | Entry point — runs `compinit`, then sources every module under `~/.zsh/` |
+| `.zprofile` | Login-shell notes (PATH and fnm are handled in the modules) |
+| `.p10k.zsh` | [Powerlevel10k](https://github.com/romkatv/powerlevel10k) prompt config (agnoster-style) |
+| `.gitconfig` / `.gitignore_global` | Git settings and global ignores |
 
-## 📚 Prerequisites
-* A sense of humor 🤪
-* Love for emojis 😍
-* Oh, and macOS with Homebrew and Relevant development tools (Ruby, PHP, Composer, Yarn, etc.) based on your project requirements. (kinda important) 🍏
+### `~/.zsh/` modules
 
-## 🛠 Installation
-* Clone this baby 🍼: git clone git@github.com:yourusername/dotfiles.git
-* Move files to your home directory 🏠: mv dotfiles/.* ~
-* Revel in your newfound powers! 🎊
+```
+path.zsh        # PATH (deduped via `typeset -U path`)
+env.zsh         # environment variables
+history.zsh     # 50k-line shared, de-duplicated history
+ssh.zsh         # ssh-agent via macOS Keychain
+tools.zsh       # fzf, zoxide, bat integrations
+plugins.zsh     # interactive UX plugins (loaded last)
+lib/
+  cache-init.zsh  # caches slow `eval "$(tool init)"` snippets, refreshed on upgrade
+lazy/
+  fnm.zsh         # Node — lazy-loaded, silent auto-switch on cd
+  pyenv.zsh       # Python — lazy-loaded
+  conda.zsh       # conda — lazy-loaded
+aliases/
+  composer.zsh  dev.zsh  git.zsh  utils.zsh
+functions/
+  dev.zsh  git.zsh  utils.zsh
+```
 
-## 🤔 How to Use
-Just let these dotfiles do their thing. Sit back, relax, and watch your terminal come to life! 🎬🍿
+## Features
 
-## 👐 Contributing
-Got ideas? Funny jokes? Cool tricks? Share away! Let's make this the quirkiest dotfiles repo ever! 🎭
+- **Fast startup** — slow tool inits (Powerlevel10k, zoxide, fzf) are cached to disk and only regenerated when the tool is upgraded; version managers (fnm/pyenv/conda) are lazy-loaded.
+- **Powerlevel10k** prompt — agnoster-style powerline, shows `user@host` only over SSH/as root.
+- **Interactive UX** — [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [fzf-tab](https://github.com/Aloxaf/fzf-tab), and history-substring-search (↑/↓).
+- **Modern CLI tools** — `fnm`, `fzf`, `zoxide`, `fd`, `bat`, `eza`.
+- **Big shared history** — 50k lines, de-duplicated, shared live across sessions.
 
-## 📖 License
-Freely explore the universe of these dotfiles! Just remember: with great power comes great responsibility (and fun)! 🕷️🕸️
+## Requirements
+
+macOS with [Homebrew](https://brew.sh). Install the tooling:
+
+```sh
+brew install powerlevel10k fnm fzf zoxide fd bat eza \
+  zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search fzf-tab
+```
+
+## Install
+
+Clone, then copy the dotfiles into your home directory:
+
+```sh
+git clone git@github.com:dr5hn/dotfiles.git
+cd dotfiles
+cp -R .zshrc .zprofile .p10k.zsh .zsh .gitconfig .gitignore_global ~/
+exec zsh
+```
+
+> **Note:** machine- and org-specific values (e.g. `$GH_ORG`, `$COMPOSER_VENDOR`)
+> live in `~/.zsh/private.zsh`, which is **not** tracked here. Create your own if
+> you use the aliases that reference them — the rest works without it.
+
+## License
+
+[MIT](LICENSE)
